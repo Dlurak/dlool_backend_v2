@@ -6,9 +6,13 @@
     "dev": "bun run --watch src/index.ts"
   },
   "dependencies": {
-    "elysia": "latest"
+    "edgedb": "^1.4.1",
+    "elysia": "latest",
+    "elysia-http-status-code": "^1.0.9",
+    "passport-local": "^1.0.0"
   },
   "devDependencies": {
+    "@edgedb/generate": "^0.4.1",
     "bun-types": "latest"
   },
   "module": "src/index.js"
