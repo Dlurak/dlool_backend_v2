@@ -1,6 +1,10 @@
-import { Static, t } from "elysia";
+import { z } from 'zod'
 
-export const authSecret = t.Object({
-  password: t.Optional(t.String()),
+export const authSecret = z.object({
+	password: z.optional(z.string()),
 });
-export type AuthSecret = Static<typeof authSecret>;
+export type AuthSecret = z.infer<typeof authSecret>;
+
+export const passowrdAuthSecret = z.object({
+	password: z.string(),
+});
