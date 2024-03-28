@@ -36,7 +36,7 @@ type PositiveResponse<T> = {
 type NegativeResponse = {
 	status: "error";
 	error: string;
-}
+};
 
 type Response<T extends Status, D> = T extends "success"
 	? PositiveResponse<D>
