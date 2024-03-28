@@ -1,6 +1,9 @@
 /** Seconds in a minute */
 export const MINUTE = 60;
 
+/** Seconds in a quarter of a hour */
+export const QUARTER_HOUR = 15 * MINUTE;
+
 /** Seconds in half a hour */
 export const HALF_HOUR = 30 * MINUTE;
 

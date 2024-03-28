@@ -49,15 +49,24 @@ export const refreshTokenRouter = new Elysia({ prefix: "/refresh-token" })
 				return notMatchingReturn;
 			}
 
-			const { token, expiresIn } = createToken({
+			const { token: tokenRefresh, expiresIn: expiresInRefresh } = createToken({
 				username: body.username,
 				type: "refresh",
+			});
+
+			const { token: tokenAccess, expiresIn: expiresInAccess } = createToken({
+				username: body.username,
+				type: "access",
+				createdBy: "login",
 			});
 
 			return {
 				status: "success",
 				message: "Token generated successfully",
-				data: { token, expiresIn },
+				data: {
+					refreshToken: { token: tokenRefresh, expiresIn: expiresInRefresh },
+					accessToken: { token: tokenAccess, expiresIn: expiresInAccess },
+				},
 			};
 		},
 		{

@@ -1,4 +1,4 @@
-import { HALF_HOUR, HALF_YEAR } from "constants/time";
+import { HALF_YEAR, QUARTER_HOUR } from "constants/time";
 import { sign, verify } from "jsonwebtoken";
 import { envVars } from "utils/env";
 import { z } from "zod";
@@ -23,7 +23,7 @@ export const createToken = (payload: JwtPayload, expiresIn?: number) => {
 	const secret = envVars().JWT_SECRET;
 
 	const expiresSeconds =
-		expiresIn ?? (payload.type === "access" ? HALF_YEAR : HALF_HOUR);
+		expiresIn ?? (payload.type === "access" ? HALF_YEAR : QUARTER_HOUR);
 
 	return {
 		token: sign(payload, secret, { expiresIn: expiresSeconds }),
@@ -40,11 +40,11 @@ export const verifyToken = (token: string) => {
 		return {
 			isValid: true,
 			payload,
-		};
+		} as const;
 	} catch (error) {
 		return {
 			isValid: false,
 			payload: null,
-		};
+		} as const;
 	}
 };
