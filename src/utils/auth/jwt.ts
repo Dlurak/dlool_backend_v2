@@ -4,47 +4,47 @@ import { envVars } from "utils/env";
 import { z } from "zod";
 
 const accessTokenPayloadSchema = z.object({
-  username: z.string(),
-  type: z.literal("access"),
-  createdBy: z.union([z.literal("login"), z.literal("refresh")]),
+	username: z.string(),
+	type: z.literal("access"),
+	createdBy: z.union([z.literal("login"), z.literal("refresh")]),
 });
 const refreshTokenPayloadSchema = z.object({
-  username: z.string(),
-  type: z.literal("refresh"),
+	username: z.string(),
+	type: z.literal("refresh"),
 });
 
 const jwtPayloadSchema = z.union([
-  accessTokenPayloadSchema,
-  refreshTokenPayloadSchema,
+	accessTokenPayloadSchema,
+	refreshTokenPayloadSchema,
 ]);
 type JwtPayload = z.infer<typeof jwtPayloadSchema>;
 
 export const createToken = (payload: JwtPayload, expiresIn?: number) => {
-  const secret = envVars().JWT_SECRET;
+	const secret = envVars().JWT_SECRET;
 
-  const expiresSeconds =
-    expiresIn ?? (payload.type === "access" ? HALF_YEAR : HALF_HOUR);
+	const expiresSeconds =
+		expiresIn ?? (payload.type === "access" ? HALF_YEAR : HALF_HOUR);
 
-  return {
-    token: sign(payload, secret, { expiresIn: expiresSeconds }),
-    expiresIn: expiresSeconds,
-  };
+	return {
+		token: sign(payload, secret, { expiresIn: expiresSeconds }),
+		expiresIn: expiresSeconds,
+	};
 };
 
 export const verifyToken = (token: string) => {
-  try {
-    const secret = envVars().JWT_SECRET;
-    const verified = verify(token, secret);
-    const payload = jwtPayloadSchema.parse(verified);
+	try {
+		const secret = envVars().JWT_SECRET;
+		const verified = verify(token, secret);
+		const payload = jwtPayloadSchema.parse(verified);
 
-    return {
-      isValid: true,
-      payload,
-    };
-  } catch (error) {
-    return {
-      isValid: false,
-      payload: null,
-    };
-  }
+		return {
+			isValid: true,
+			payload,
+		};
+	} catch (error) {
+		return {
+			isValid: false,
+			payload: null,
+		};
+	}
 };

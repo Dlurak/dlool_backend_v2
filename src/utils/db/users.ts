@@ -8,12 +8,12 @@ import { client } from "index";
  * @returns A boolean indicating if the username is taken
  */
 export const isUsernameTaken = async (username: string) => {
-  const countQuery = e.count(
-    e.select(e.User, (u) => ({
-      filter: e.op(u.username, "=", username),
-    })),
-  );
-  const count = await countQuery.run(client);
+	const countQuery = e.count(
+		e.select(e.User, (u) => ({
+			filter: e.op(u.username, "=", username),
+		})),
+	);
+	const count = await countQuery.run(client);
 
-  return count > 0;
+	return count > 0;
 };

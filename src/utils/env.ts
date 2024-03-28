@@ -10,7 +10,6 @@ type Env = z.infer<typeof schema>;
  */
 let envDump: null | Env = null;
 
-
 export const envVars = () => {
 	if (envDump) return envDump;
 

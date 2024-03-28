@@ -1,0 +1,44 @@
+name: Linting & formatting using biome
+
+on:
+  push:
+    branches: ["master", "actions"]
+  workflow_dispatch:
+
+jobs:
+  formatting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v1
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+      - name: Start EdgeDB
+        uses: edgedb/setup-edgedb@v1
+      - name: Generate Query Builder
+        run: bunx @edgedb/generate edgeql-js
+
+      - name: Format code
+        run: bun check:apply
+
+      - name: Check for Changes
+        id: check_changes
+        run: |
+          git diff --exit-code || echo "::set-output name=changes::true"
+
+      - name: Commit Changes
+        if: steps.check_changes.outputs.changes == 'true'
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Auto-format code"
+
+      - name: Push Changes
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref_name }}

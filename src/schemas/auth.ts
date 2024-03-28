@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from "zod";
 
 export const authSecret = z.object({
 	password: z.optional(z.string()),
