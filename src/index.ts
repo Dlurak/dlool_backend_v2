@@ -4,6 +4,7 @@ import { Elysia } from "elysia";
 import { accessTokenRouter } from "routes/auth/accessToken";
 import { refreshTokenRouter } from "routes/auth/refreshToken";
 import { registerRouter } from "routes/auth/register";
+import { userInfoRouter } from "routes/user/info";
 import { edgedb } from "../dbschema/edgeql-js/imports";
 
 export const client = edgedb.createClient();
@@ -28,6 +29,7 @@ const app = new Elysia()
 				tags: [
 					{ name: "App", description: "General app information" },
 					{ name: "Auth", description: "Authentication endpoints" },
+					{ name: "User", description: "User information endpoints" },
 				],
 			},
 		}),
@@ -48,6 +50,7 @@ const app = new Elysia()
 	.group("/auth", (app) =>
 		app.use(registerRouter).use(refreshTokenRouter).use(accessTokenRouter),
 	)
+	.group("/user", (app) => app.use(userInfoRouter))
 	.listen(3000);
 
 console.log(

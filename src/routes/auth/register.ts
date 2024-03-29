@@ -26,14 +26,17 @@ export const registerRouter = new Elysia({ prefix: "/register" })
 
 			return creationQuery
 				.run(client)
-				.then((data) => ({
-					status: "success",
-					message: "User created successfully",
-					data: {
-						id: data.id,
-						usernmae: body.username,
-					},
-				}))
+				.then((data) => {
+					set.status = httpStatus.HTTP_201_CREATED;
+					return {
+						status: "success",
+						message: "User created successfully",
+						data: {
+							id: data.id,
+							usernmae: body.username,
+						},
+					};
+				})
 				.catch((e) => {
 					console.error(e);
 					set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
