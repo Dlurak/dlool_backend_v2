@@ -1,3 +1,4 @@
+import type { ElysiaSwaggerConfig } from "@elysiajs/swagger/dist/types";
 import { VERSION } from "./general";
 
 /**
@@ -25,4 +26,4 @@ export const DOCUMENTATION_OPTIONS = {
 			{ name: "User", description: "User information endpoints" },
 		],
 	},
-};
+} satisfies ElysiaSwaggerConfig<"/swagger">;
