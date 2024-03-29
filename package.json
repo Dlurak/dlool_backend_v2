@@ -5,7 +5,9 @@
 		"dev": "bun run --watch src/index.ts",
 
 		"check": "biome check .",
-		"check:apply": "biome check --apply ."
+		"check:apply": "biome check --apply .",
+
+		"edgedb": "bunx @edgedb/generate edgeql-js"
 	},
 	"dependencies": {
 		"edgedb": "^1.4.1",

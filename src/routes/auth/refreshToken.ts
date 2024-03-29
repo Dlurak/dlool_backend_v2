@@ -5,6 +5,7 @@ import { client } from "index";
 import { passowrdAuthSecret } from "schemas/auth";
 import { createToken } from "utils/auth/jwt";
 import { randomNumber } from "utils/random";
+import { responseBuilder } from "utils/response";
 import { wait } from "utils/time";
 
 export const refreshTokenRouter = new Elysia({ prefix: "/refresh-token" })
@@ -53,6 +54,27 @@ export const refreshTokenRouter = new Elysia({ prefix: "/refresh-token" })
 				username: body.username,
 				type: "refresh",
 			});
+
+			const query = e.update(e.User, () => ({
+				filter: e.op(e.User.username, "=", body.username),
+				set: {
+					tokens: {
+						"+=": e.insert(e.RefreshToken, { token: tokenRefresh }),
+					},
+				},
+			}));
+
+			const result = await query.run(client).catch(() =>
+				responseBuilder("error", {
+					error: "An error occurred while updating the user",
+				}),
+			);
+
+			// a positive result is a array
+			if (!Array.isArray(result)) {
+				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
+				return result;
+			}
 
 			const { token: tokenAccess, expiresIn: expiresInAccess } = createToken({
 				username: body.username,

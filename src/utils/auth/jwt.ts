@@ -23,7 +23,7 @@ export const createToken = (payload: JwtPayload, expiresIn?: number) => {
 	const secret = envVars().JWT_SECRET;
 
 	const expiresSeconds =
-		expiresIn ?? (payload.type === "access" ? HALF_YEAR : QUARTER_HOUR);
+		expiresIn ?? (payload.type === "refresh" ? HALF_YEAR : QUARTER_HOUR);
 
 	return {
 		token: sign(payload, secret, { expiresIn: expiresSeconds }),
