@@ -81,4 +81,4 @@ export const createSchool = new Elysia()
 				tags: ["school"],
 			},
 		},
-	)
+	);
