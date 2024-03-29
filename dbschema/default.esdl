@@ -20,12 +20,47 @@ module default {
 			default := datetime_current();
 			readonly := true;
 		};
+
+		classes := .<students[is Class];
 	}
 
 	type RefreshToken {
 		required token: str {
 			readonly := true;
 		};
+		required created: datetime {
+			default := datetime_current();
+			readonly := true;
+		};
+	}
+
+	type School {
+		required name: str {
+			constraint exclusive;
+		};
+		required description: str;
+
+		required created: datetime {
+			default := datetime_current();
+			readonly := true;
+		};	
+		
+		multi classes: Class {
+			constraint exclusive;
+		};
+	}
+	
+	type Class {
+		required name: str;
+
+		multi students: User {
+			joinedAt: datetime {
+				default := datetime_current();
+				readonly := true;
+			};
+		};
+
+		single school := .<classes[is School];
 		required created: datetime {
 			default := datetime_current();
 			readonly := true;
