@@ -96,5 +96,6 @@ export const refreshTokenRouter = new Elysia({ prefix: "/refresh-token" })
 				username: t.String({ minLength: 1 }),
 				password: t.String({ minLength: 1 }),
 			}),
+			detail: { tags: ["Auth"] },
 		},
 	);

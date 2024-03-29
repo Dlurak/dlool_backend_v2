@@ -47,13 +47,22 @@ export const registerRouter = new Elysia({ prefix: "/register" })
 			body: t.Object({
 				username: t.String({
 					minLength: 1,
+					description: "The username must be unique and will be used to login",
 				}),
 				displayname: t.String({
 					minLength: 1,
+					description:
+						"The display name will be shown to other users and does not need to be unique",
 				}),
-				password: t.RegExp(
-					/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-				),
+				password: t.String({
+					minLength: 8,
+					description:
+						"Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character",
+					pattern:
+						"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$",
+				}),
+				// t.RegExp(),
 			}),
+			detail: { tags: ["Auth"] },
 		},
 	);

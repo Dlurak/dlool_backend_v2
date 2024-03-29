@@ -43,5 +43,6 @@ export const accessTokenRouter = new Elysia({ prefix: "/access-token" })
 			body: t.Object({
 				refreshToken: t.String({ minLength: 1 }),
 			}),
+			detail: { tags: ["Auth"] },
 		},
 	);
