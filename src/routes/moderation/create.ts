@@ -70,19 +70,21 @@ export const createJoinRequest = new Elysia()
 				});
 			}
 
-			const isUserAlreadyInClassQuery = e.count(e.select(e.Class, (c) => {
-				const classNameMatches = e.op(c.name, "=", body.class);
-				const schoolNameMatches = e.op(c.school.name, "=", body.school);
-				const userMatches = e.op(c.students.username, "=", auth.username);
+			const isUserAlreadyInClassQuery = e.count(
+				e.select(e.Class, (c) => {
+					const classNameMatches = e.op(c.name, "=", body.class);
+					const schoolNameMatches = e.op(c.school.name, "=", body.school);
+					const userMatches = e.op(c.students.username, "=", auth.username);
 
-				return {
-					filter_single: e.op(
-						e.op(classNameMatches, "and", schoolNameMatches),
-						"and",
-						userMatches,
-					),
-				};
-			}));
+					return {
+						filter_single: e.op(
+							e.op(classNameMatches, "and", schoolNameMatches),
+							"and",
+							userMatches,
+						),
+					};
+				}),
+			);
 			const isUserAlreadyInClassResult = await promiseResult(() =>
 				isUserAlreadyInClassQuery.run(client),
 			);

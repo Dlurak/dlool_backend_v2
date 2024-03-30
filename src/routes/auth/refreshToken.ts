@@ -64,7 +64,7 @@ export const refreshTokenRouter = new Elysia({ prefix: "/refresh-token" })
 					},
 				},
 			}));
-			
+
 			const result = await promiseResult(() => query.run(client));
 
 			if (result.isError) {
