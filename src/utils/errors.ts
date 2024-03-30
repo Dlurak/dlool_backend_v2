@@ -13,12 +13,15 @@ export const promiseResult = async <T>(callback: () => Promise<T>) => {
 				({
 					status: "success",
 					data,
+					isError: false,
 				}) as const,
 		)
 		.catch(
-			() =>
+			(e) =>
 				({
 					status: "error",
+					error: e,
+					isError: true,
 				}) as const,
 		);
 };

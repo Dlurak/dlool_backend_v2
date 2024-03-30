@@ -6,6 +6,7 @@ import { accessTokenRouter } from "routes/auth/accessToken";
 import { refreshTokenRouter } from "routes/auth/refreshToken";
 import { registerRouter } from "routes/auth/register";
 import { classRouter } from "routes/classes";
+import { moderationRouter } from "routes/moderation";
 import { schoolRouter } from "routes/school";
 import { userInfoRouter } from "routes/user/info";
 import { edgedb } from "../dbschema/edgeql-js/imports";
@@ -16,6 +17,7 @@ const app = new Elysia()
 	.use(swagger(DOCUMENTATION_OPTIONS))
 	.use(schoolRouter)
 	.use(classRouter)
+	.use(moderationRouter)
 	.get(
 		"/",
 		() => ({

@@ -66,6 +66,12 @@ export const createClass = new Elysia()
 				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
 				return DATABASE_WRITE_FAILED;
 			}
+			if (!createResult.data) {
+				set.status = httpStatus.HTTP_404_NOT_FOUND;
+				return responseBuilder("error", {
+					error: "School not found",
+				});
+			}
 
 			set.status = httpStatus.HTTP_201_CREATED;
 			return responseBuilder("success", {

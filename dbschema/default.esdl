@@ -2,10 +2,10 @@ module default {
 	scalar type Authmethod extending enum<Password>;
 
 	type User {
-		required username: str;
-		required displayname: str {
+		required username: str {
 			constraint exclusive;
 		};
+		required displayname: str;
 
 		required multi authmethod: Authmethod;
 		multi tokens: RefreshToken {
@@ -65,5 +65,27 @@ module default {
 			default := datetime_current();
 			readonly := true;
 		};
+	}
+	
+	scalar type Status extending enum<Pending, Accepted, Rejected>;
+
+	type JoinRequest {
+		required wantsToJoin: Class {
+			readonly := true;
+		};
+		required user: User {
+			readonly := true;
+		};
+		required created: datetime {
+			default := datetime_current();
+			readonly := true;
+		};
+
+		required status: Status {
+			default := 'Pending';
+		};
+
+		reviewedAt: datetime;
+		reviewedBy: User;
 	}
 }
