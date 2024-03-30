@@ -1,4 +1,5 @@
 import e from "@edgedb";
+import { DATABASE_WRITE_FAILED } from "constants/responses";
 import { Elysia, t } from "elysia";
 import { HttpStatusCode } from "elysia-http-status-code";
 import { client } from "index";
@@ -14,10 +15,9 @@ export const refreshTokenRouter = new Elysia({ prefix: "/refresh-token" })
 	.post(
 		"/password",
 		async ({ body, set, httpStatus }) => {
-			const notMatchingReturn = {
-				status: "error",
+			const notMatchingReturn = responseBuilder("error", {
 				error: "Username or password is incorrect",
-			};
+			});
 
 			const user = await e
 				.select(e.User, (u) => ({
@@ -36,10 +36,9 @@ export const refreshTokenRouter = new Elysia({ prefix: "/refresh-token" })
 			const expectedPwdHash = passowrdAuthSecret.safeParse(user[0].authsecret);
 			if (!expectedPwdHash.success) {
 				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
-				return {
-					status: "error",
+				return responseBuilder("error", {
 					error: "An error occurred while verifying the user",
-				};
+				});
 			}
 
 			const isPasswordCorrect = await Bun.password.verify(
@@ -69,7 +68,7 @@ export const refreshTokenRouter = new Elysia({ prefix: "/refresh-token" })
 
 			if (result.isError) {
 				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
-				return result;
+				return DATABASE_WRITE_FAILED;
 			}
 
 			const { token: tokenAccess, expiresIn: expiresInAccess } = createToken({
@@ -78,14 +77,13 @@ export const refreshTokenRouter = new Elysia({ prefix: "/refresh-token" })
 				createdBy: "login",
 			});
 
-			return {
-				status: "success",
+			return responseBuilder("success", {
 				message: "Token generated successfully",
 				data: {
 					refreshToken: { token: tokenRefresh, expiresIn: expiresInRefresh },
 					accessToken: { token: tokenAccess, expiresIn: expiresInAccess },
 				},
-			};
+			});
 		},
 		{
 			body: t.Object({
