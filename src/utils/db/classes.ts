@@ -48,17 +48,17 @@ export async function getAmountOfMembersOfClass(props: ClassIdentifier) {
  */
 export async function doesClassExist(props: ClassIdentifier) {
 	const query = e.select(e.Class, (c) => {
-		const nameMatches = e.op(c.name, '=', props.className);
-		const schoolMatches = e.op(c.school.name, '=', props.schoolName);
+		const nameMatches = e.op(c.name, "=", props.className);
+		const schoolMatches = e.op(c.school.name, "=", props.schoolName);
 		return {
-			filter_single: e.op(nameMatches, 'and', schoolMatches)
+			filter_single: e.op(nameMatches, "and", schoolMatches),
 		};
 	});
-	const result = await promiseResult(() => query.run(client))
+	const result = await promiseResult(() => query.run(client));
 
 	if (result.isError) {
 		throw new Error("Failed to get class");
 	}
 
-	return !!result.data
+	return !!result.data;
 }

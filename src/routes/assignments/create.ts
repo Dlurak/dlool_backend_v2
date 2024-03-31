@@ -25,29 +25,31 @@ export const createAssignment = new Elysia()
 				return UNAUTHORIZED;
 			}
 
-			const from = customDateToNormal(body.from)
-			const due = customDateToNormal(body.due)
+			const from = customDateToNormal(body.from);
+			const due = customDateToNormal(body.due);
 			if (due < from) {
 				set.status = httpStatus.HTTP_400_BAD_REQUEST;
-				return responseBuilder('error', { error: "Due must not be earlier then from" });
+				return responseBuilder("error", {
+					error: "Due must not be earlier then from",
+				});
 			}
-			
 
-			const classExists = await promiseResult(() => doesClassExist({
-				schoolName: body.school,
-				className: body.class
-			}))
+			const classExists = await promiseResult(() =>
+				doesClassExist({
+					schoolName: body.school,
+					className: body.class,
+				}),
+			);
 			if (classExists.isError) {
-				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR
-				return DATABASE_READ_FAILED
+				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
+				return DATABASE_READ_FAILED;
 			}
 			if (!classExists.data) {
 				set.status = httpStatus.HTTP_404_NOT_FOUND;
-				return responseBuilder('error', {
-					error: "Can't find that school or class"
-				})
+				return responseBuilder("error", {
+					error: "Can't find that school or class",
+				});
 			}
-			
 
 			const isUserInClassQuery = e.count(
 				e.select(e.Class, (c) => {
@@ -99,7 +101,7 @@ export const createAssignment = new Elysia()
 			set.status = httpStatus.HTTP_201_CREATED;
 			return responseBuilder("success", {
 				message: "Successfully created assignment",
-				data: insertResult.data
+				data: insertResult.data,
 			});
 		},
 		{
@@ -109,7 +111,7 @@ export const createAssignment = new Elysia()
 
 				subject: t.String({ minLength: 1 }),
 				description: t.String({ minLength: 1 }),
-				from: t.Object( {
+				from: t.Object({
 					day: t.Number({ minimum: 1, maximum: 31 }),
 					month: t.Number({ minimum: 1, maximum: 12 }),
 					year: t.Number({ minimum: 1970 }),
