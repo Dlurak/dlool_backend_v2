@@ -1,5 +1,3 @@
-// TODO: Write a unit test
-
 /**
  * Executes a provided callback which returns a Promise and handles the result.
  * @template T - The type of data returned by the Promise.
