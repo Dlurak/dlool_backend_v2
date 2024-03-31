@@ -54,6 +54,7 @@ module default {
 		required name: str;
 
 		multi students: User {
+			# Not used - may be removed
 			joinedAt: datetime {
 				default := datetime_current();
 				readonly := true;
