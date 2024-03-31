@@ -53,6 +53,8 @@ export const reviewJoinRequest = new Elysia()
 				});
 			}
 
+			const isAccepted = body.status === "Accepted";
+
 			const updateQuery = e.update(e.JoinRequest, (jr) => {
 				const idMatches = e.op(jr.id, "=", idAsId);
 				const userIsPriviliged = e.op(
@@ -72,28 +74,6 @@ export const reviewJoinRequest = new Elysia()
 					},
 				};
 			});
-			const result = await promiseResult(() => updateQuery.run(client));
-
-			if (result.isError) {
-				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
-				return DATABASE_WRITE_FAILED;
-			}
-			if (!result.data) {
-				set.status = httpStatus.HTTP_403_FORBIDDEN;
-				return responseBuilder("error", {
-					error: "You don't have the rights to review this request",
-				});
-			}
-
-			const isAccepted = body.status === "Accepted";
-			if (!isAccepted) {
-				return responseBuilder("success", {
-					message: "Sucessfully rejected",
-					data: null,
-				});
-			}
-
-			// TODO: Put this into one transaction together with `updateQuery`
 			const updateClassQuery = e.update(e.Class, (c) => {
 				const classIdAsId = e.cast(
 					e.uuid,
@@ -112,17 +92,37 @@ export const reviewJoinRequest = new Elysia()
 					},
 				};
 			});
-			const updateClassResult = await promiseResult(() =>
-				updateClassQuery.run(client),
-			);
-			if (updateClassResult.isError) {
-				// In this case the status is already changed but the user isn't a student of the class :/
+
+			const result = await promiseResult(() => {
+				return client.transaction(async (tx) => {
+					const r = await updateQuery.run(tx);
+					if (isAccepted) {
+						await updateClassQuery.run(tx);
+					}
+					return r;
+				});
+			});
+
+			if (result.isError) {
 				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
 				return DATABASE_WRITE_FAILED;
 			}
+			if (!result.data) {
+				set.status = httpStatus.HTTP_403_FORBIDDEN;
+				return responseBuilder("error", {
+					error: "You don't have the rights to review this request",
+				});
+			}
+
+			if (isAccepted) {
+				return responseBuilder("success", {
+					message: "Successfully accepted",
+					data: null,
+				});
+			}
 
 			return responseBuilder("success", {
-				message: "Successfully accepted",
+				message: "Sucessfully rejected",
 				data: null,
 			});
 		},
