@@ -62,3 +62,18 @@ export async function doesClassExist(props: ClassIdentifier) {
 
 	return !!result.data;
 }
+
+export const multipleClasses = (props: {
+	schoolName: string;
+	classNames: string[];
+}) => {
+	return e.select(e.Class, (c) => {
+		const nameMatches = e.op(c.name, "in", e.set(...props.classNames));
+		const schoolMatches = e.op(c.school.name, "=", props.schoolName);
+
+		return {
+			filter: e.op(nameMatches, "and", schoolMatches),
+			name: true,
+		};
+	});
+};
