@@ -22,6 +22,7 @@ module default {
 		};
 
 		classes := .<students[is Class];
+		assignments := .<updatedBy[is Assignment];
 	}
 
 	type RefreshToken {
@@ -62,6 +63,9 @@ module default {
 		};
 
 		single school := .<classes[is School];
+
+		assignments := .<class[is Assignment];
+
 		required created: datetime {
 			default := datetime_current();
 			readonly := true;
@@ -88,5 +92,24 @@ module default {
 
 		reviewedAt: datetime;
 		reviewedBy: User;
+	}
+
+	type Assignment {
+		required subject: str;
+		required description: str;
+
+		required dueDate: datetime;
+		required fromDate: datetime;
+
+		required multi updates: datetime {
+			default := datetime_current();
+		};
+		required multi updatedBy: User;
+
+		multi completedBy: User;
+
+		required class: Class {
+			readonly := true;
+		};
 	}
 }

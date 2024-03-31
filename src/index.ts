@@ -2,6 +2,7 @@ import { swagger } from "@elysiajs/swagger";
 import { DOCUMENTATION_OPTIONS } from "constants/documentation";
 import { VERSION } from "constants/general";
 import { Elysia } from "elysia";
+import { assignmentsRouter } from "routes/assignments";
 import { accessTokenRouter } from "routes/auth/accessToken";
 import { refreshTokenRouter } from "routes/auth/refreshToken";
 import { registerRouter } from "routes/auth/register";
@@ -18,6 +19,7 @@ const app = new Elysia()
 	.use(schoolRouter)
 	.use(classRouter)
 	.use(moderationRouter)
+	.use(assignmentsRouter)
 	.get(
 		"/",
 		() => ({
