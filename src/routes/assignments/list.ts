@@ -30,6 +30,8 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 		}
 		const classNames = removeDuplicates(classesResult.data).sort();
 
+		const isDescending = query.orderDirection === "desc";
+
 		const assignmentsQuery = (limit: number, offset: number) =>
 			e.select(e.Assignment, (a) => {
 				const classMatches = e.op(a.class.name, "in", e.set(...classNames));
@@ -38,10 +40,23 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 				// -1 disables the limit
 				const internalLimit = limit === -1 ? undefined : limit;
 
+				const orderExpression = {
+					due: a.dueDate,
+					from: a.fromDate,
+					subject: a.subject,
+					description: a.description,
+					versionsCount: e.count(a.updates),
+				}[query.orderKey];
+
 				return {
 					filter: e.op(classMatches, "and", schoolMatches),
 					limit: internalLimit,
 					offset,
+					order_by: {
+						expression: orderExpression,
+						direction: isDescending ? e.DESC : e.ASC,
+						empty: e.EMPTY_FIRST,
+					},
 
 					subject: true,
 					description: true,
@@ -49,6 +64,7 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 					fromDate: true,
 					updates: true,
 					updatedBy: () => ({ username: true }),
+					id: true
 				};
 			});
 
@@ -82,8 +98,12 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 			});
 		}
 
-		const formatted = result.data.assignments.map((assignment) => {
-			const updates = merge(
+		const formatted = result.data.assignments.map((assignment) => ({
+			subject: assignment.subject,
+			description: assignment.description,
+			from: normalDateToCustom(assignment.fromDate),
+			due: normalDateToCustom(assignment.dueDate),
+			updates: merge(
 				{
 					key: "user",
 					array: assignment.updatedBy.map((u) => u.username),
@@ -92,16 +112,8 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 					key: "timestamp",
 					array: assignment.updates.map((d) => d.getTime()),
 				},
-			);
-
-			return {
-				subject: assignment.subject,
-				description: assignment.description,
-				from: normalDateToCustom(assignment.fromDate),
-				due: normalDateToCustom(assignment.dueDate),
-				updates,
-			};
-		});
+			),
+		}));
 
 		return responseBuilder("success", {
 			message: "Received data",
@@ -117,6 +129,19 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 			classes: t.String({ minLength: 1 }),
 			limit: t.Numeric({ minimum: -1, default: 50 }),
 			offset: t.Numeric({ minimum: 0, default: 0 }),
+			orderDirection: t.Union([t.Literal("asc"), t.Literal("desc")], {
+				default: "desc",
+			}),
+			orderKey: t.Union(
+				[
+					t.Literal("due"),
+					t.Literal("from"),
+					t.Literal("subject"),
+					t.Literal("description"),
+					t.Literal("versionsCount"),
+				],
+				{ default: "due" },
+			),
 		}),
 	},
 );
