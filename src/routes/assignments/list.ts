@@ -1,4 +1,5 @@
 import e from "@edgedb";
+import { DATE } from "constants/regex";
 import { DATABASE_READ_FAILED } from "constants/responses";
 import Elysia, { t } from "elysia";
 import { HttpStatusCode } from "elysia-http-status-code";
@@ -7,11 +8,16 @@ import { removeDuplicates } from "utils/arrays/duplicates";
 import { filterTruthy } from "utils/arrays/filter";
 import { areSameValue } from "utils/arrays/general";
 import { merge } from "utils/arrays/merge";
-import { normalDateToCustom } from "utils/dates/customAndNormal";
+import {
+	normalDateToCustom,
+	stringToNormal,
+} from "utils/dates/customAndNormal";
 import { multipleClasses } from "utils/db/classes";
 import { promiseResult } from "utils/errors";
 import { responseBuilder } from "utils/response";
 import { split } from "utils/strings/split";
+import { surround } from "utils/strings/surround";
+import { savePredicate } from "utils/undefined";
 import { z } from "zod";
 
 const classesSchema = z.array(z.string().min(1)).nonempty();
@@ -32,10 +38,61 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 
 		const isDescending = query.orderDirection === "desc";
 
+		const descFilter = query.filter?.description;
+		const subjFilter = query.filter?.subject;
+
+		const earliestFrom = savePredicate(
+			query.filter?.from?.earliest,
+			stringToNormal,
+		);
+		const latestFrom = savePredicate(
+			query.filter?.from?.latest,
+			stringToNormal,
+		);
+
+		const earliestDue = savePredicate(
+			query.filter?.due?.earliest,
+			stringToNormal,
+		);
+		const latestDue = savePredicate(query.filter?.due?.latest, stringToNormal);
+
 		const assignmentsQuery = (limit: number, offset: number) =>
 			e.select(e.Assignment, (a) => {
 				const classMatches = e.op(a.class.name, "in", e.set(...classNames));
 				const schoolMatches = e.op(a.class.school.name, "=", query.school);
+
+				// I know that the `?? false` is unnecessary, but i want it to show the default value
+				const descFilterEdge = descFilter
+					? descFilter.exact ?? false
+						? e.op(a.description, "=", descFilter.query)
+						: e.op(a.description, "ilike", surround(descFilter.query, "%"))
+					: e.cast(e.bool, true);
+
+				const subjFilterEdge = subjFilter
+					? subjFilter.exact ?? false
+						? e.op(a.subject, "=", subjFilter.query)
+						: e.op(a.subject, "ilike", surround(subjFilter.query, "%"))
+					: e.cast(e.bool, true);
+
+				const earliestFromFilter = earliestFrom
+					? e.op(a.fromDate, ">=", earliestFrom)
+					: e.bool(true);
+				const latestFromFilter = latestFrom
+					? e.op(a.fromDate, "<=", latestFrom)
+					: e.bool(true);
+				const fromFilter = e.op(earliestFromFilter, "and", latestFromFilter);
+
+				const earliestDueFilter = earliestDue
+					? e.op(a.dueDate, ">=", earliestDue)
+					: e.bool(true);
+				const latestDueFilter = latestDue
+					? e.op(a.dueDate, "<=", latestDue)
+					: e.bool(true);
+				const dueFilter = e.op(earliestDueFilter, "and", latestDueFilter);
+
+				const generalFilter = e.op(classMatches, "and", schoolMatches);
+				const specificFilter = e.op(subjFilterEdge, "and", descFilterEdge);
+				const dateFilter = e.op(dueFilter, "and", fromFilter);
 
 				// -1 disables the limit
 				const internalLimit = limit === -1 ? undefined : limit;
@@ -49,7 +106,11 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 				}[query.orderKey];
 
 				return {
-					filter: e.op(classMatches, "and", schoolMatches),
+					filter: e.op(
+						generalFilter,
+						"and",
+						e.op(specificFilter, "and", dateFilter),
+					),
 					limit: internalLimit,
 					offset,
 					order_by: {
@@ -64,7 +125,7 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 					fromDate: true,
 					updates: true,
 					updatedBy: () => ({ username: true }),
-					id: true
+					id: true,
 				};
 			});
 
@@ -141,6 +202,34 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 					t.Literal("versionsCount"),
 				],
 				{ default: "due" },
+			),
+			filter: t.Optional(
+				t.ObjectString({
+					from: t.Optional(
+						t.Object({
+							earliest: t.Optional(t.RegExp(DATE)),
+							latest: t.Optional(t.RegExp(DATE)),
+						}),
+					),
+					due: t.Optional(
+						t.Object({
+							earliest: t.Optional(t.RegExp(DATE)),
+							latest: t.Optional(t.RegExp(DATE)),
+						}),
+					),
+					subject: t.Optional(
+						t.Object({
+							query: t.String({ minLength: 1 }),
+							exact: t.Optional(t.Boolean()),
+						}),
+					),
+					description: t.Optional(
+						t.Object({
+							query: t.String({ minLength: 1 }),
+							exact: t.Optional(t.Boolean()),
+						}),
+					),
+				}),
 			),
 		}),
 	},
