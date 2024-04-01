@@ -2,6 +2,7 @@
 	"name": "backend_v2",
 	"version": "1.0.50",
 	"scripts": {
+		"start": "bun src/index.ts",
 		"dev": "bun run --watch src/index.ts",
 		"check": "biome check .",
 		"check:apply": "biome check --apply .",
