@@ -25,6 +25,14 @@ export const DATABASE_READ_FAILED = responseBuilder("error", {
 });
 
 /**
+ * A response indicating that an error occurred while deleting from the database
+ * Use with `500 Internal Server Error`
+ */
+export const DATABASE_DELETE_FAILED = responseBuilder("error", {
+	error: "An error occurred while deleting from the database",
+});
+
+/**
  * A response indicating that the user does not have permission to access the resource
  * Use with `403 Forbidden`
  */

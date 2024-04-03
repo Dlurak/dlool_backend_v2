@@ -10,6 +10,7 @@ module default {
 		required multi authmethod: Authmethod;
 		multi tokens: RefreshToken {
 			constraint exclusive;
+			on target delete allow;
 		};
 
 		# keys: Authmethods
