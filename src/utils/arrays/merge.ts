@@ -1,3 +1,6 @@
+// NOTE: Currently this is dead code
+// 08.04.24
+
 interface MergeInput<T, K extends string> {
 	array: T[];
 	key: K;

@@ -9,6 +9,7 @@ import { registerRouter } from "routes/auth/register";
 import { classRouter } from "routes/classes";
 import { moderationRouter } from "routes/moderation";
 import { schoolRouter } from "routes/school";
+import { deleteUser } from "routes/user/delete";
 import { userInfoRouter } from "routes/user/info";
 import { changeUserDetailsRouter } from "routes/user/settings";
 import { edgedb } from "../dbschema/edgeql-js/imports";
@@ -35,13 +36,13 @@ const app = new Elysia()
 		},
 	)
 	.group("/auth", (app) =>
-		app
-			.use(registerRouter)
-			.use(refreshTokenRouter)
-			.use(accessTokenRouter)
-			.group("/me", (app) => app.use(changeUserDetailsRouter)),
+		app.use(registerRouter).use(refreshTokenRouter).use(accessTokenRouter),
 	)
-	.group("/user", (app) => app.use(userInfoRouter).use(changeUserDetailsRouter))
+	.group("/user", (app) =>
+		app
+			.use(userInfoRouter)
+			.group("/me", (app) => app.use(changeUserDetailsRouter).use(deleteUser)),
+	)
 	.listen(3000);
 
 console.log(

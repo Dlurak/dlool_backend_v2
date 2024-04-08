@@ -8,6 +8,7 @@ module default {
 		multi tokens: RefreshToken {
 			constraint exclusive;
 			on target delete allow;
+			on source delete delete target;
 		};
 
 		required password: str;
@@ -18,7 +19,7 @@ module default {
 		};
 
 		classes := .<students[is Class];
-		assignments := .<updatedBy[is Assignment];
+		changes := .<user[is Change];
 	}
 
 	type RefreshToken {
@@ -56,6 +57,7 @@ module default {
 				default := datetime_current();
 				readonly := true;
 			};
+			on target delete allow;
 		};
 
 		single school := .<classes[is School];
@@ -76,6 +78,7 @@ module default {
 		};
 		required user: User {
 			readonly := true;
+			on target delete delete source;
 		};
 		required created: datetime {
 			default := datetime_current();
@@ -87,7 +90,9 @@ module default {
 		};
 
 		reviewedAt: datetime;
-		reviewedBy: User;
+		reviewedBy: User {
+			on target delete allow;
+		};
 	}
 
 	type Assignment {
@@ -97,15 +102,27 @@ module default {
 		required dueDate: datetime;
 		required fromDate: datetime;
 
-		required multi updates: datetime {
-			default := datetime_current();
+		multi updates: Change {
+			on target delete allow;
 		};
-		required multi updatedBy: User;
 
-		multi completedBy: User;
+		multi completedBy: User {
+			on target delete allow;
+		};
 
 		required class: Class {
 			readonly := true;
 		};
+	}
+
+	type Change {
+		required user: User {
+			on target delete delete source;
+		};
+		required time: datetime {
+			default := datetime_current();
+		};
+
+		assignments := .<updates[is Assignment];
 	}
 }

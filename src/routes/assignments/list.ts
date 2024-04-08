@@ -7,7 +7,6 @@ import { client } from "index";
 import { removeDuplicates } from "utils/arrays/duplicates";
 import { filterTruthy } from "utils/arrays/filter";
 import { areSameValue } from "utils/arrays/general";
-import { merge } from "utils/arrays/merge";
 import {
 	normalDateToCustom,
 	stringToNormal,
@@ -123,8 +122,10 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 					description: true,
 					dueDate: true,
 					fromDate: true,
-					updates: true,
-					updatedBy: () => ({ username: true }),
+					updates: () => ({
+						user: () => ({ username: true, displayname: true }),
+						time: true,
+					}),
 					id: true,
 				};
 			});
@@ -164,16 +165,10 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 			description: assignment.description,
 			from: normalDateToCustom(assignment.fromDate),
 			due: normalDateToCustom(assignment.dueDate),
-			updates: merge(
-				{
-					key: "user",
-					array: assignment.updatedBy.map((u) => u.username),
-				},
-				{
-					key: "timestamp",
-					array: assignment.updates.map((d) => d.getTime()),
-				},
-			),
+			updates: assignment.updates.map((upd) => ({
+				user: upd.user,
+				time: upd.time.getTime(),
+			})),
 		}));
 
 		return responseBuilder("success", {

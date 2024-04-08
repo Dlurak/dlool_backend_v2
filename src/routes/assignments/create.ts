@@ -88,9 +88,11 @@ export const createAssignment = new Elysia()
 						filter_single: e.op(classNameMatches, "and", schoolMatches),
 					};
 				}),
-				updatedBy: e.select(e.User, (u) => ({
-					filter_single: e.op(u.username, "=", auth.username),
-				})),
+				updates: e.insert(e.Change, {
+					user: e.select(e.User, (u) => ({
+						filter_single: e.op(u.username, "=", auth.username),
+					})),
+				}),
 			});
 			const insertResult = await promiseResult(() => insertQuery.run(client));
 			if (insertResult.isError) {
