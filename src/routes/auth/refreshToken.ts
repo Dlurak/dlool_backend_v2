@@ -96,4 +96,4 @@ export const refreshTokenRouter = new Elysia({ prefix: "/refresh-token" })
 			}),
 			detail: { tags: ["Auth"] },
 		},
-	)
+	);
