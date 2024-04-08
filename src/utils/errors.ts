@@ -15,7 +15,7 @@ export const promiseResult = async <T>(callback: () => Promise<T>) => {
 				}) as const,
 		)
 		.catch(
-			(e) =>
+			(e: Error) =>
 				({
 					status: "error",
 					error: e,
