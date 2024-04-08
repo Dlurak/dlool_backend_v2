@@ -1,10 +1,12 @@
 import e from "@edgedb";
-import { DATABASE_WRITE_FAILED } from "constants/responses";
+import {
+	DATABASE_READ_FAILED,
+	DATABASE_WRITE_FAILED,
+} from "constants/responses";
 import { Elysia, t } from "elysia";
 import { HttpStatusCode } from "elysia-http-status-code";
 import { client } from "index";
 import { auth } from "plugins/auth";
-import { passowrdAuthSecret } from "schemas/auth";
 import { createToken } from "utils/auth/jwt";
 import { promiseResult } from "utils/errors";
 import { randomNumber } from "utils/random";
@@ -23,32 +25,28 @@ export const refreshTokenRouter = new Elysia({ prefix: "/refresh-token" })
 				error: "Username or password is incorrect",
 			});
 
-			const user = await e
-				.select(e.User, (u) => ({
-					authsecret: true,
-					filter: e.op(u.username, "=", body.username),
-				}))
-				.run(client);
+			const selectQuery = e.select(e.User, (u) => ({
+				password: true,
+				filter_single: e.op(u.username, "=", body.username),
+			}));
+			const selectResult = await promiseResult(() => selectQuery.run(client));
 
-			if (user.length === 0) {
+			if (selectResult.isError) {
+				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
+				return DATABASE_READ_FAILED;
+			}
+			if (!selectResult.data) {
 				// to prevent timing attacks, we wait a random amount of time
 				await wait(randomNumber(90, 130));
 				set.status = httpStatus.HTTP_401_UNAUTHORIZED;
 				return notMatchingReturn;
 			}
 
-			const expectedPwdHash = passowrdAuthSecret.safeParse(user[0].authsecret);
-			if (!expectedPwdHash.success) {
-				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
-				return responseBuilder("error", {
-					error: "An error occurred while verifying the user",
-				});
-			}
-
 			const isPasswordCorrect = await Bun.password.verify(
 				body.password,
-				expectedPwdHash.data.password,
+				selectResult.data.password,
 			);
+
 			if (!isPasswordCorrect) {
 				set.status = httpStatus.HTTP_401_UNAUTHORIZED;
 				return notMatchingReturn;

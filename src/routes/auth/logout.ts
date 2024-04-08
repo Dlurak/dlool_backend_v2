@@ -1,5 +1,9 @@
 import e from "@edgedb";
-import { DATABASE_DELETE_FAILED, UNAUTHORIZED } from "constants/responses";
+import {
+	DATABASE_DELETE_FAILED,
+	MUST_BE_GENERATED_BY_LOGIN_NOT_REFRESH,
+	UNAUTHORIZED,
+} from "constants/responses";
 import { Elysia } from "elysia";
 import { HttpStatusCode } from "elysia-http-status-code";
 import { client } from "index";
@@ -17,10 +21,7 @@ export const logoutRouter = new Elysia()
 		}
 		if (auth.createdBy !== "login") {
 			set.status = httpStatus.HTTP_403_FORBIDDEN;
-			return responseBuilder("error", {
-				error:
-					"Access token must be generated using log in and not a refresh token",
-			});
+			return MUST_BE_GENERATED_BY_LOGIN_NOT_REFRESH;
 		}
 
 		const delQuery = e.count(

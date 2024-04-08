@@ -1,8 +1,11 @@
 import e from "@edgedb";
+import { DATABASE_WRITE_FAILED } from "constants/responses";
 import { Elysia, t } from "elysia";
 import { HttpStatusCode } from "elysia-http-status-code";
 import { client } from "index";
 import { isUsernameTaken } from "utils/db/users";
+import { promiseResult } from "utils/errors";
+import { responseBuilder } from "utils/response";
 
 export const registerRouter = new Elysia({ prefix: "/register" })
 	.use(HttpStatusCode())
@@ -11,40 +14,28 @@ export const registerRouter = new Elysia({ prefix: "/register" })
 		async ({ body, set, httpStatus }) => {
 			if (await isUsernameTaken(body.username)) {
 				set.status = httpStatus.HTTP_400_BAD_REQUEST;
-				return {
-					status: "error",
+				return responseBuilder("error", {
 					error: "Username already taken",
-				};
+				});
 			}
 
 			const creationQuery = e.insert(e.User, {
 				username: body.username,
 				displayname: body.displayname,
-				authmethod: e.Authmethod.Password,
-				authsecret: { password: await Bun.password.hash(body.password) },
+				password: await Bun.password.hash(body.password),
 			});
 
-			return creationQuery
-				.run(client)
-				.then((data) => {
-					set.status = httpStatus.HTTP_201_CREATED;
-					return {
-						status: "success",
-						message: "User created successfully",
-						data: {
-							id: data.id,
-							usernmae: body.username,
-						},
-					};
-				})
-				.catch((e) => {
-					console.error(e);
-					set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
-					return {
-						status: "error",
-						error: "An error occurred while creating the user",
-					};
-				});
+			const result = await promiseResult(() => creationQuery.run(client));
+			if (result.isError) {
+				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
+				return DATABASE_WRITE_FAILED;
+			}
+
+			set.status = httpStatus.HTTP_201_CREATED;
+			return responseBuilder("success", {
+				message: "User created successfully",
+				data: { usernmae: body.username },
+			});
 		},
 		{
 			body: t.Object({

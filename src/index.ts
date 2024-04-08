@@ -10,6 +10,7 @@ import { classRouter } from "routes/classes";
 import { moderationRouter } from "routes/moderation";
 import { schoolRouter } from "routes/school";
 import { userInfoRouter } from "routes/user/info";
+import { changeUserDetailsRouter } from "routes/user/settings";
 import { edgedb } from "../dbschema/edgeql-js/imports";
 
 export const client = edgedb.createClient();
@@ -34,9 +35,13 @@ const app = new Elysia()
 		},
 	)
 	.group("/auth", (app) =>
-		app.use(registerRouter).use(refreshTokenRouter).use(accessTokenRouter),
+		app
+			.use(registerRouter)
+			.use(refreshTokenRouter)
+			.use(accessTokenRouter)
+			.group("/me", (app) => app.use(changeUserDetailsRouter)),
 	)
-	.group("/user", (app) => app.use(userInfoRouter))
+	.group("/user", (app) => app.use(userInfoRouter).use(changeUserDetailsRouter))
 	.listen(3000);
 
 console.log(

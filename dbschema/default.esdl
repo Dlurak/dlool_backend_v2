@@ -1,21 +1,16 @@
 module default {
-	scalar type Authmethod extending enum<Password>;
-
 	type User {
 		required username: str {
 			constraint exclusive;
 		};
 		required displayname: str;
 
-		required multi authmethod: Authmethod;
 		multi tokens: RefreshToken {
 			constraint exclusive;
 			on target delete allow;
 		};
 
-		# keys: Authmethods
-		# value: required data
-		required authsecret: json;
+		required password: str;
 		
 		required created: datetime {
 			default := datetime_current();
