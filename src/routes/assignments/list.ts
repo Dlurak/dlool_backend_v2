@@ -169,6 +169,7 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 				user: upd.user,
 				time: upd.time.getTime(),
 			})),
+			id: assignment.id,
 		}));
 
 		return responseBuilder("success", {

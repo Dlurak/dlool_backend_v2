@@ -104,6 +104,7 @@ module default {
 
 		multi updates: Change {
 			on target delete allow;
+			on source delete delete target;
 		};
 
 		multi completedBy: User {
