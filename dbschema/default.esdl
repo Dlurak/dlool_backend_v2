@@ -116,6 +116,40 @@ module default {
 		};
 	}
 
+	scalar type Priority extending enum<Critical, High, Medium, Low>;
+
+	type Calendar {
+		required class: Class {
+			readonly := true;
+		};
+
+
+		required title: str;
+		summary: str;
+
+		required beginning: datetime;
+		# It may sound stupid, but in school we don't
+		# always know how long something will take, so it is optional
+		ending: datetime;
+
+		location: str;
+
+
+		multi tags: Tag;
+		priority: Priority;
+
+		multi updates: Change {
+			on target delete allow;
+			on source delete delete target;
+		};
+	}
+
+	type Tag {
+		required tag: str;
+		color: str;
+		required class: Class;
+	}
+
 	type Change {
 		required user: User {
 			on target delete delete source;
@@ -125,5 +159,6 @@ module default {
 		};
 
 		assignments := .<updates[is Assignment];
+		calendar := .<updates[is Calendar];
 	}
 }

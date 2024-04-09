@@ -6,6 +6,7 @@ import { assignmentsRouter } from "routes/assignments";
 import { accessTokenRouter } from "routes/auth/accessToken";
 import { refreshTokenRouter } from "routes/auth/refreshToken";
 import { registerRouter } from "routes/auth/register";
+import { calendarRouter } from "routes/calendar";
 import { classRouter } from "routes/classes";
 import { moderationRouter } from "routes/moderation";
 import { schoolRouter } from "routes/school";
@@ -22,6 +23,7 @@ const app = new Elysia()
 	.use(classRouter)
 	.use(moderationRouter)
 	.use(assignmentsRouter)
+	.use(calendarRouter)
 	.get(
 		"/",
 		() => ({

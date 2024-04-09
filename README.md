@@ -21,9 +21,9 @@ Classical homework books have a lot of problems. These are some of them and how 
 
 This is the second Version of the backend. Here is a brief roadmap until it will be integrated into the Frontend:
 
-- [ ] Improvements to the authentication system
-- [ ] Notes
 - [ ] Calendar
+- [ ] Tags
+- [ ] Notes
 - [ ] A SDK for TypeScript
 - [ ] Migrating the Frontend from the old to the new API
 - [ ] Migrating the data from MongoDB to EdgeDB
