@@ -107,6 +107,7 @@ export const createCalendar = new Elysia()
 						t.Literal("High"),
 						t.Literal("Medium"),
 						t.Literal("Low"),
+						t.Literal("Minimal"),
 					]),
 				),
 			}),

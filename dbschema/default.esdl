@@ -116,7 +116,7 @@ module default {
 		};
 	}
 
-	scalar type Priority extending enum<Critical, High, Medium, Low>;
+	scalar type Priority extending enum<Critical, High, Medium, Low, Minimal>;
 
 	type Calendar {
 		required class: Class {
