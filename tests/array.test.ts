@@ -74,19 +74,28 @@ describe("same value", () => {
 
 describe("is increasing", () => {
 	it("works for short arrays", () => {
-		expect(isIncreasing([])).toBeTrue()
-		expect(isIncreasing([1])).toBeTrue()
-		expect(isIncreasing([-1])).toBeTrue()
-	})
+		expect(isIncreasing([])).toBeTrue();
+		expect(isIncreasing([1])).toBeTrue();
+		expect(isIncreasing([-1])).toBeTrue();
+	});
 
 	it("works for increasing long arrays", () => {
-		expect(isIncreasing([1,2,3,4,60,70])).toBeTrue()
-		expect(isIncreasing([-Infinity, -2.5,300, Infinity])).toBeTrue()
-	})
+		expect(isIncreasing([1, 2, 3, 4, 60, 70])).toBeTrue();
+		expect(
+			isIncreasing([
+				Number.NEGATIVE_INFINITY,
+				-2.5,
+				300,
+				Number.POSITIVE_INFINITY,
+			]),
+		).toBeTrue();
+	});
 
 	it("works for non increasing long arrays", () => {
-		expect(isIncreasing([-Infinity, -200, 0, 1, 2, 4, 3, 5])).toBeFalse()
-		expect(isIncreasing([1,0,2,3,4])).toBeFalse()
-		expect(isIncreasing([0,1,2,4,3])).toBeFalse()
-	})
-})
+		expect(
+			isIncreasing([Number.NEGATIVE_INFINITY, -200, 0, 1, 2, 4, 3, 5]),
+		).toBeFalse();
+		expect(isIncreasing([1, 0, 2, 3, 4])).toBeFalse();
+		expect(isIncreasing([0, 1, 2, 4, 3])).toBeFalse();
+	});
+});

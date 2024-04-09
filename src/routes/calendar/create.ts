@@ -21,11 +21,13 @@ export const createCalendar = new Elysia()
 				return UNAUTHORIZED;
 			}
 
-			if (!isIncreasing([body.beginning, body.ending ?? Infinity]))	 {
+			if (
+				!isIncreasing([body.beginning, body.ending ?? Number.POSITIVE_INFINITY])
+			) {
 				set.status = httpStatus.HTTP_422_UNPROCESSABLE_ENTITY;
 				return responseBuilder("error", {
-					error: "Ending must be later then beginning"
-				})
+					error: "Ending must be later then beginning",
+				});
 			}
 
 			const isUserInClassQuery = e.count(
@@ -99,12 +101,14 @@ export const createCalendar = new Elysia()
 				ending: t.Optional(t.Number({ minimum: 1 })),
 				summary: t.Optional(t.String({ minLength: 1 })),
 				location: t.Optional(t.String({ minLength: 1 })),
-				priority: t.Optional(t.Union([
-					t.Literal("Critical"),
-					t.Literal("High"),
-					t.Literal("Medium"),
-					t.Literal("Low"),
-				]))
+				priority: t.Optional(
+					t.Union([
+						t.Literal("Critical"),
+						t.Literal("High"),
+						t.Literal("Medium"),
+						t.Literal("Low"),
+					]),
+				),
 			}),
 		},
 	);
