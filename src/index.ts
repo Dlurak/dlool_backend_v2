@@ -10,6 +10,7 @@ import { calendarRouter } from "routes/calendar";
 import { classRouter } from "routes/classes";
 import { moderationRouter } from "routes/moderation";
 import { schoolRouter } from "routes/school";
+import { tagRouter } from "routes/tags";
 import { deleteUser } from "routes/user/delete";
 import { userInfoRouter } from "routes/user/info";
 import { changeUserDetailsRouter } from "routes/user/settings";
@@ -24,6 +25,7 @@ const app = new Elysia()
 	.use(moderationRouter)
 	.use(assignmentsRouter)
 	.use(calendarRouter)
+	.use(tagRouter)
 	.get(
 		"/",
 		() => ({
