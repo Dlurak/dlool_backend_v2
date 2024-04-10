@@ -7,22 +7,23 @@ import { auth } from "plugins/auth";
 import { promiseResult } from "utils/errors";
 import { responseBuilder } from "utils/response";
 
-export const deleteAssignment = new Elysia()
-	.use(HttpStatusCode())
+export const deleteCalendar = new Elysia()
 	.use(auth)
-	.delete("/:id", async ({ auth, set, httpStatus, params }) => {
+	.use(HttpStatusCode())
+	.delete("/:id", async ({ set, httpStatus, auth, params }) => {
 		if (!auth.isAuthorized) {
 			set.status = httpStatus.HTTP_401_UNAUTHORIZED;
 			return UNAUTHORIZED;
 		}
 
-		const query = e.delete(e.Assignment, (a) => ({
+		const query = e.delete(e.Calendar, (c) => ({
 			filter_single: e.op(
-				e.op(a.id, "=", e.cast(e.uuid, params.id)),
+				e.op(c.id, "=", e.cast(e.uuid, params.id)),
 				"and",
-				e.op(auth.username, "in", a.class.students.username),
+				e.op(auth.username, "in", c.class.students.username),
 			),
 		}));
+
 		const result = await promiseResult(() => query.run(client));
 
 		if (result.isError) {
@@ -30,15 +31,14 @@ export const deleteAssignment = new Elysia()
 			return DATABASE_DELETE_FAILED;
 		}
 		if (!result.data) {
-			// Either the user isn't in the class and/or the homework doesn't exist
 			set.status = httpStatus.HTTP_404_NOT_FOUND;
 			return responseBuilder("error", {
-				error: "Homework not found in any of your classes",
+				error: "Calendar event not found in any of your classes",
 			});
 		}
 
 		return responseBuilder("success", {
-			message: "Successfully deleted assignment",
+			message: "Successfully deleted calendar event",
 			data: null,
 		});
 	});
