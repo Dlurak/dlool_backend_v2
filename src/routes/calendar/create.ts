@@ -21,9 +21,11 @@ export const createCalendar = new Elysia()
 				return UNAUTHORIZED;
 			}
 
-			if (
-				!isIncreasing([body.beginning, body.ending ?? Number.POSITIVE_INFINITY])
-			) {
+			const validTimes = !isIncreasing([
+				body.beginning,
+				body.ending ?? Number.POSITIVE_INFINITY,
+			]);
+			if (validTimes) {
 				set.status = httpStatus.HTTP_422_UNPROCESSABLE_ENTITY;
 				return responseBuilder("error", {
 					error: "Ending must be later then beginning",
