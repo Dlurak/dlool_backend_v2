@@ -1,4 +1,5 @@
 import e from "@edgedb";
+import { COLOR } from "constants/regex";
 import {
 	DATABASE_READ_FAILED,
 	DATABASE_WRITE_FAILED,
@@ -88,7 +89,7 @@ export const createTag = new Elysia()
 			body: t.Object({
 				tag: t.String({ minLength: 1 }),
 				class: t.String({ minLength: 1 }),
-				color: t.Optional(t.RegExp(/^#[0-9a-f]{3}([0-9a-f]{3})?$/)),
+				color: t.Optional(t.RegExp(COLOR)),
 			}),
 		},
 	);

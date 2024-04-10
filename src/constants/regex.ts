@@ -16,3 +16,11 @@ export const DATE = /^\d{4}(-\d{2}(-\d{2})?)?$/;
  */
 export const PASSWORD =
 	/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/;
+
+/**
+ * A regular expression to match a hex color
+ * - Only lowercase
+ * - 3 or 6 digits
+ * - Starting with a #
+ */
+export const COLOR = /^#[0-9a-f]{3}([0-9a-f]{3})?$/;
