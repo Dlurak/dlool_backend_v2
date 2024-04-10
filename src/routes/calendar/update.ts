@@ -8,6 +8,7 @@ import Elysia, { t } from "elysia";
 import { HttpStatusCode } from "elysia-http-status-code";
 import { client } from "index";
 import { auth } from "plugins/auth";
+import { fallback } from "utils/arrays/fallback";
 import { isIncreasing } from "utils/arrays/increasing";
 import { promiseResult } from "utils/errors";
 import { responseBuilder } from "utils/response";
@@ -76,6 +77,15 @@ export const updateCalendar = new Elysia()
 					beginning:
 						savePredicate(body.beginning, (d) => new Date(d)) ?? c.beginning,
 					ending: savePredicate(body.ending, (d) => new Date(d)) ?? c.ending,
+					tags: body.tags
+						? e.select(e.Tag, (t) => ({
+								filter: e.op(
+									e.op(t.class.id, "=", c.class.id),
+									"and",
+									e.op(t.tag, "in", e.set(...fallback(body.tags || [], [""]))),
+								),
+							}))
+						: c.tags,
 					location: body.location ?? c.location,
 					priority: body.priority ?? c.priority,
 				},
@@ -105,6 +115,7 @@ export const updateCalendar = new Elysia()
 				summary: t.Optional(t.String({ minLength: 1 })),
 				beginning: t.Optional(t.Number({ minimum: 0 })),
 				ending: t.Optional(t.Number({ minimum: 1 })),
+				tags: t.Optional(t.Array(t.String({ minLength: 1 }))),
 				location: t.Optional(t.String({ minLength: 1 })),
 				priority: t.Optional(
 					t.Union([

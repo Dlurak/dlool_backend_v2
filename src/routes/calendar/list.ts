@@ -4,6 +4,7 @@ import { DATABASE_READ_FAILED } from "constants/responses";
 import Elysia, { t } from "elysia";
 import { HttpStatusCode } from "elysia-http-status-code";
 import { client } from "index";
+import { stringArraySchema } from "schemas/stringArray";
 import { removeDuplicates } from "utils/arrays/duplicates";
 import { filterTruthy } from "utils/arrays/filter";
 import {
@@ -16,14 +17,11 @@ import { responseBuilder } from "utils/response";
 import { split } from "utils/strings/split";
 import { surround } from "utils/strings/surround";
 import { savePredicate } from "utils/undefined";
-import { z } from "zod";
-
-const classesSchema = z.array(z.string().min(1)).nonempty();
 
 export const listCalendar = new Elysia().use(HttpStatusCode()).get(
 	"/",
 	async ({ set, httpStatus, query }) => {
-		const classesResult = classesSchema.safeParse(
+		const classesResult = stringArraySchema.safeParse(
 			filterTruthy(split(query.classes)),
 		);
 		if (!classesResult.success) {
@@ -102,6 +100,10 @@ export const listCalendar = new Elysia().use(HttpStatusCode()).get(
 						user: () => ({ username: true, displayname: true }),
 						time: true,
 					}),
+					tags: () => ({
+						tag: true,
+						color: true,
+					}),
 					id: true,
 				};
 			});
@@ -126,6 +128,7 @@ export const listCalendar = new Elysia().use(HttpStatusCode()).get(
 		// Not in the mood to fix it rn
 		const formatted = result.data.calendar.map((c) => ({
 			...replaceDateDeep(c, normalDateToCustom),
+			tags: c.tags,
 			updates: c.updates.map((u) => replaceDateDeep(u, (d) => d.getTime())),
 		}));
 

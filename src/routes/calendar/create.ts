@@ -4,6 +4,7 @@ import Elysia, { t } from "elysia";
 import { HttpStatusCode } from "elysia-http-status-code";
 import { client } from "index";
 import { auth } from "plugins/auth";
+import { fallback } from "utils/arrays/fallback";
 import { isIncreasing } from "utils/arrays/increasing";
 import { promiseResult } from "utils/errors";
 import { classBySchoolAndName } from "utils/queries/class";
@@ -46,13 +47,24 @@ export const createCalendar = new Elysia()
 				})),
 			);
 
-			const updateQuery = e.insert(e.Calendar, {
+			const insertQuery = e.insert(e.Calendar, {
 				title: body.title,
 				summary: body.summary,
 				class: classBySchoolAndName({
 					className: body.class,
 					schoolName: body.school,
 				}),
+				tags: e.select(e.Tag, (t) => ({
+					filter: e.op(
+						e.op(
+							e.op(t.class.name, "=", body.class),
+							"and",
+							e.op(t.class.school.name, "=", body.school),
+						),
+						"and",
+						e.op(t.tag, "in", e.set(...fallback(body.tags, [""]))),
+					),
+				})),
 				beginning: new Date(body.beginning),
 				ending: savePredicate(body.ending, (ending) => new Date(ending)),
 				updates: e.insert(e.Change, {
@@ -71,7 +83,7 @@ export const createCalendar = new Elysia()
 						.then((c) => c === 1);
 					if (!isInClass) return "NOT_IN_CLASS";
 
-					return updateQuery.run(tx);
+					return insertQuery.run(tx);
 				});
 			});
 
@@ -99,6 +111,7 @@ export const createCalendar = new Elysia()
 				title: t.String({ minLength: 1 }),
 				school: t.String({ minLength: 1 }),
 				class: t.String({ minLength: 1 }),
+				tags: t.Array(t.String({ minLength: 1 })),
 				beginning: t.Number({ minimum: 0 }),
 				ending: t.Optional(t.Number({ minimum: 1 })),
 				summary: t.Optional(t.String({ minLength: 1 })),
