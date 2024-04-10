@@ -1,11 +1,13 @@
 type Object = Record<string | number | symbol, unknown>;
 
+type FinalReturn<T, R> = T extends Object ? ConverDatesDeep<T, R> : T;
+
 type ConverDatesDeep<T extends Object, R> = {
-	[K in keyof T]: T[K] extends Date
+	[K in keyof T]: Date extends T[K]
 		? R
-		: T[K] extends Object
-			? ConverDatesDeep<T[K], R>
-			: T[K];
+		: T[K] extends unknown[]
+			? FinalReturn<T[K][number], R>
+			: FinalReturn<T[K], R>;
 };
 
 type DateCallback<T> = (val: Date) => T;
@@ -18,6 +20,8 @@ export const replaceDateDeep = <T extends Object, R>(
 	const newPairs: [string, unknown][] = [];
 	for (const [key, val] of pairs) {
 		if (val instanceof Date) newPairs.push([key, callback(val)]);
+		else if (Array.isArray(val))
+			newPairs.push([key, val.map((i) => replaceDateDeep(i, callback))]);
 		else if (typeof val === "object" && val)
 			newPairs.push([key, replaceDateDeep(val as Object, callback)]);
 		else newPairs.push([key, val]);

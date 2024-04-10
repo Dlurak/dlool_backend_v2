@@ -20,6 +20,20 @@ describe("transform", () => {
 	it("works recursively", () => {
 		const obj = {
 			date: new Date("2021-01-01"),
+			arrayStuff: [
+				{
+					date: new Date("2021-01-01"),
+					number: 1,
+				},
+				{
+					date: new Date("2021-01-01"),
+					number: 1,
+				},
+				{
+					date: new Date("2021-01-01"),
+					number: 1,
+				},
+			],
 			inner: {
 				date: new Date("2021-01-01"),
 				number: 1,
@@ -29,6 +43,20 @@ describe("transform", () => {
 
 		expect(replaceDateWithTimestamp(obj)).toEqual({
 			date: 1609459200000,
+			arrayStuff: [
+				{
+					date: 1609459200000,
+					number: 1,
+				},
+				{
+					date: 1609459200000,
+					number: 1,
+				},
+				{
+					date: 1609459200000,
+					number: 1,
+				},
+			],
 			inner: {
 				date: 1609459200000,
 				number: 1,

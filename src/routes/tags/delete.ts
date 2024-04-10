@@ -1,6 +1,6 @@
 import e from "@edgedb";
 import { DATABASE_DELETE_FAILED, UNAUTHORIZED } from "constants/responses";
-import Elysia, { t } from "elysia";
+import Elysia from "elysia";
 import { HttpStatusCode } from "elysia-http-status-code";
 import { client } from "index";
 import { auth } from "plugins/auth";

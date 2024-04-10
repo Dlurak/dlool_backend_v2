@@ -124,11 +124,8 @@ export const listCalendar = new Elysia().use(HttpStatusCode()).get(
 			return DATABASE_READ_FAILED;
 		}
 
-		// the type is incorrect ending is `CustomDate | null` not `Date | null`
-		// Not in the mood to fix it rn
 		const formatted = result.data.calendar.map((c) => ({
 			...replaceDateDeep(c, normalDateToCustom),
-			tags: c.tags,
 			updates: c.updates.map((u) => replaceDateDeep(u, (d) => d.getTime())),
 		}));
 
