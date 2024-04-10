@@ -135,7 +135,9 @@ module default {
 		location: str;
 
 
-		multi tags: Tag;
+		multi tags: Tag {
+			on target delete allow;
+		};
 		priority: Priority;
 
 		multi updates: Change {

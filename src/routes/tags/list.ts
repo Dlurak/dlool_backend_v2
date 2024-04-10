@@ -28,6 +28,7 @@ export const listTags = new Elysia().use(HttpStatusCode()).get(
 
 				tag: true,
 				color: true,
+				id: true,
 			};
 		});
 
