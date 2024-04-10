@@ -43,7 +43,7 @@ export const updateCalendar = new Elysia()
 			}
 
 			const prevBeginning = selectResult.data.beginning.getTime();
-			const prevEnding =selectResult.data.ending?.getTime()
+			const prevEnding = selectResult.data.ending?.getTime();
 
 			const validTimes = !isIncreasing([
 				body.beginning ?? prevBeginning,
