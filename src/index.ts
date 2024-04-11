@@ -9,6 +9,7 @@ import { registerRouter } from "routes/auth/register";
 import { calendarRouter } from "routes/calendar";
 import { classRouter } from "routes/classes";
 import { moderationRouter } from "routes/moderation";
+import { noteRouter } from "routes/notes";
 import { schoolRouter } from "routes/school";
 import { tagRouter } from "routes/tags";
 import { deleteUser } from "routes/user/delete";
@@ -26,6 +27,7 @@ const app = new Elysia()
 	.use(assignmentsRouter)
 	.use(calendarRouter)
 	.use(tagRouter)
+	.use(noteRouter)
 	.get(
 		"/",
 		() => ({

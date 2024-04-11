@@ -146,6 +146,31 @@ module default {
 		};
 	}
 
+	scalar type EditScope extending enum<Self, Class, School>;
+
+	type Note {
+		required class: Class {
+			readonly := true;
+		};
+
+		required title: str;
+		summary: str;
+
+		multi tags: Tag {
+			on target delete allow;
+		};
+		priority: Priority;
+
+		required editScope: EditScope {
+			default := EditScope.Self;
+		};
+
+		multi updates: Change {
+			on target delete allow;
+			on source delete delete target;
+		};
+	}
+
 	type Tag {
 		required tag: str;
 		color: str;
