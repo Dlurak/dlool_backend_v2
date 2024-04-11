@@ -11,6 +11,7 @@ import { auth } from "plugins/auth";
 import { fallback } from "utils/arrays/fallback";
 import { isIncreasing } from "utils/arrays/increasing";
 import { promiseResult } from "utils/errors";
+import { userByUsername } from "utils/queries/user";
 import { responseBuilder } from "utils/response";
 import { savePredicate } from "utils/undefined";
 
@@ -66,9 +67,7 @@ export const updateCalendar = new Elysia()
 				set: {
 					updates: {
 						"+=": e.insert(e.Change, {
-							user: e.select(e.User, (u) => ({
-								filter_single: e.op(u.username, "=", auth.username),
-							})),
+							user: userByUsername(auth.username),
 						}),
 					},
 
