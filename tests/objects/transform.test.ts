@@ -27,11 +27,11 @@ describe("transform", () => {
 				},
 				{
 					date: new Date("2021-01-01"),
-					number: 1,
+					number: 2,
 				},
 				{
 					date: new Date("2021-01-01"),
-					number: 1,
+					number: 3,
 				},
 			],
 			inner: {
@@ -50,11 +50,11 @@ describe("transform", () => {
 				},
 				{
 					date: 1609459200000,
-					number: 1,
+					number: 2,
 				},
 				{
 					date: 1609459200000,
-					number: 1,
+					number: 3,
 				},
 			],
 			inner: {

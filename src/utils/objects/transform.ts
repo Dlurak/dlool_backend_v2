@@ -6,7 +6,7 @@ type ConverDatesDeep<T extends Object, R> = {
 	[K in keyof T]: Date extends T[K]
 		? R
 		: T[K] extends unknown[]
-			? FinalReturn<T[K][number], R>
+			? FinalReturn<T[K][number], R>[]
 			: FinalReturn<T[K], R>;
 };
 
