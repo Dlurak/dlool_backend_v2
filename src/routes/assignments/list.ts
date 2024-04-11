@@ -125,6 +125,10 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 					updates: () => ({
 						user: () => ({ username: true, displayname: true }),
 						time: true,
+						updates: () => ({
+							user: () => ({ username: true, displayname: true }),
+							time: true,
+						}),
 					}),
 					id: true,
 				};

@@ -11,6 +11,7 @@ import {
 	normalDateToCustom,
 	stringToNormal,
 } from "utils/dates/customAndNormal";
+import { strToDir } from "utils/db/direction";
 import { promiseResult } from "utils/errors";
 import { replaceDateDeep } from "utils/objects/transform";
 import { responseBuilder } from "utils/response";
@@ -31,8 +32,6 @@ export const listCalendar = new Elysia().use(HttpStatusCode()).get(
 			});
 		}
 		const classNames = removeDuplicates(classesResult.data).sort();
-
-		const isDescending = query.orderDirection === "desc";
 
 		const latestStart = savePredicate(
 			query.filter?.start?.latest,
@@ -85,7 +84,7 @@ export const listCalendar = new Elysia().use(HttpStatusCode()).get(
 					),
 					order_by: {
 						expression: orderExpression,
-						direction: isDescending ? e.DESC : e.ASC,
+						direction: strToDir(query.orderDirection),
 						empty: e.EMPTY_LAST,
 					},
 					limit: internalLimit,
