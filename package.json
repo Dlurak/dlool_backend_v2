@@ -1,6 +1,6 @@
 {
-	"name": "backend_v2",
-	"version": "1.0.50",
+	"name": "Dlool backend v2",
+	"version": "2.0.0-beta.1",
 	"scripts": {
 		"start": "bun src/index.ts",
 		"dev": "bun run --watch src/index.ts",
