@@ -44,6 +44,7 @@ export const createNote = new Elysia()
 				})),
 				editScope: body.editScope,
 
+				creator: userByUsername(auth.username),
 				updates: e.insert(e.Change, { user: userByUsername(auth.username) }),
 			});
 			const result = await promiseResult(() => query.run(client));

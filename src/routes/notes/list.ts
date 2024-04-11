@@ -84,22 +84,27 @@ export const listNotes = new Elysia()
 						id: true,
 					};
 				});
-			const result = await promiseResult(() =>
-				dbQuery(query.limit, query.offset).run(client),
-			);
+			const result = await promiseResult(async () => {
+				const [notes, count] = await Promise.all([
+					dbQuery(query.limit, query.offset).run(client),
+					e.count(dbQuery(-1, 0)).run(client),
+				]);
+				return { notes, count };
+			});
 
 			if (result.isError) {
 				set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
 				return DATABASE_READ_FAILED;
 			}
 
-			const formatted = result.data.map((i) =>
+			const formatted = result.data.notes.map((i) =>
 				replaceDateDeep(i, normalDateToCustom),
 			);
 
 			return responseBuilder("success", {
 				message: "Successfully retrieved data",
 				data: {
+					totalCount: result.data.count,
 					notes: formatted,
 				},
 			});

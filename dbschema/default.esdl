@@ -165,6 +165,9 @@ module default {
 			default := EditScope.Self;
 		};
 
+		creator: User {
+			on target delete allow;
+		};
 		multi updates: Change {
 			on target delete allow;
 			on source delete delete target;
