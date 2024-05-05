@@ -1,3 +1,4 @@
+import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { DOCUMENTATION_OPTIONS } from "constants/documentation";
 import { VERSION } from "constants/general";
@@ -28,6 +29,7 @@ const app = new Elysia()
 	.use(calendarRouter)
 	.use(tagRouter)
 	.use(noteRouter)
+	.use(cors())
 	.get(
 		"/",
 		() => ({

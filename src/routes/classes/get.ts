@@ -16,7 +16,7 @@ export const getClass = new Elysia().use(HttpStatusCode()).get(
 				limit: query.limit,
 				offset: query.offset,
 				filter: query.query
-					? e.op(c.name, "like", `%${query.query}%`)
+					? e.op(e.str_lower(c.name), "like", `%${query.query.toLowerCase()}%`)
 					: undefined,
 
 				name: true,

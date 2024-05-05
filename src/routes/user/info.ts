@@ -23,6 +23,12 @@ export const userInfoRouter = new Elysia({ prefix: "/info" })
 				username: true,
 				displayname: true,
 				created: isThemself,
+				classes: isThemself
+					? () => ({
+							name: true,
+							school: () => ({ name: true }),
+						})
+					: false,
 				filter_single: e.op(u.username, "=", username),
 			}));
 

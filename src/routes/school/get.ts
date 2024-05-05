@@ -10,7 +10,11 @@ export const getSchools = new Elysia().use(HttpStatusCode()).get(
 	"/",
 	async ({ query: { limit, offset, query }, set, httpStatus }) => {
 		const schoolsQuery = e.select(e.School, (s) => {
-			const isLikeName = e.op(s.name, "like", `%${query}%`);
+			const isLikeName = e.op(
+				e.str_lower(s.name),
+				"like",
+				`%${query?.toLowerCase()}%`,
+			);
 			const isLikeDescription = e.op(s.description, "like", `%${query}%`);
 
 			const useFilter = !!query;

@@ -125,10 +125,6 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 					updates: () => ({
 						user: () => ({ username: true, displayname: true }),
 						time: true,
-						updates: () => ({
-							user: () => ({ username: true, displayname: true }),
-							time: true,
-						}),
 					}),
 					id: true,
 				};
@@ -153,6 +149,7 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 		});
 
 		if (result.isError) {
+			console.log(result.error);
 			set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
 			return DATABASE_READ_FAILED;
 		}

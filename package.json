@@ -10,6 +10,7 @@
 	},
 	"dependencies": {
 		"@elysiajs/bearer": "^1.0.2",
+		"@elysiajs/cors": "^1.0.2",
 		"@elysiajs/swagger": "^1.0.3",
 		"edgedb": "^1.4.1",
 		"elysia": "latest",
