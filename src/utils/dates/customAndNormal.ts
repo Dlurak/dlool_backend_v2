@@ -20,6 +20,19 @@ export const normalDateToCustom = (date: Date) => {
 };
 
 /**
+ * Converts a normal js date to a custom date record
+ */
+export const normalDateToCustomDateTime = (date: Date) => {
+	const day = date.getDate();
+	const month = date.getMonth() + 1;
+	const year = date.getFullYear();
+	const hour = date.getHours()
+	const min = date.getMinutes()
+
+	return { day, month, year, hour, min };
+};
+
+/**
  * Converts a string to a custom date
  */
 export const stringToCustom = (date: string) => {

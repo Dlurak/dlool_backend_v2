@@ -8,7 +8,7 @@ import { stringArraySchema } from "schemas/stringArray";
 import { removeDuplicates } from "utils/arrays/duplicates";
 import { filterTruthy } from "utils/arrays/filter";
 import {
-	normalDateToCustom,
+	normalDateToCustomDateTime,
 	stringToNormal,
 } from "utils/dates/customAndNormal";
 import { strToDir } from "utils/db/direction";
@@ -95,6 +95,11 @@ export const listCalendar = new Elysia().use(HttpStatusCode()).get(
 					ending: true,
 					location: true,
 					priority: true,
+					summary: true,
+					class: () => ({
+						name: true,
+						school: () => ({ name: true })
+					}),
 					updates: () => ({
 						user: () => ({ username: true, displayname: true }),
 						time: true,
@@ -124,7 +129,7 @@ export const listCalendar = new Elysia().use(HttpStatusCode()).get(
 		}
 
 		const formatted = result.data.calendar.map((c) => ({
-			...replaceDateDeep(c, normalDateToCustom),
+			...replaceDateDeep(c, normalDateToCustomDateTime),
 			updates: c.updates.map((u) => replaceDateDeep(u, (d) => d.getTime())),
 		}));
 

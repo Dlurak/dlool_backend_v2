@@ -126,6 +126,9 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 						user: () => ({ username: true, displayname: true }),
 						time: true,
 					}),
+					class: () => ({
+						name: true,
+					}),
 					id: true,
 				};
 			});
@@ -149,7 +152,6 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 		});
 
 		if (result.isError) {
-			console.log(result.error);
 			set.status = httpStatus.HTTP_500_INTERNAL_SERVER_ERROR;
 			return DATABASE_READ_FAILED;
 		}
@@ -162,15 +164,13 @@ export const listAssignments = new Elysia().use(HttpStatusCode()).get(
 		}
 
 		const formatted = result.data.assignments.map((assignment) => ({
-			subject: assignment.subject,
-			description: assignment.description,
+			...assignment,
 			from: normalDateToCustom(assignment.fromDate),
 			due: normalDateToCustom(assignment.dueDate),
 			updates: assignment.updates.map((upd) => ({
 				user: upd.user,
 				time: upd.time.getTime(),
 			})),
-			id: assignment.id,
 		}));
 
 		return responseBuilder("success", {

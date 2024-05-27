@@ -29,7 +29,7 @@ export const createNote = new Elysia()
 					username: auth.username,
 				}),
 
-				summary: body.summary,
+				summary: body.summary || null,
 				priority: body.priority,
 				tags: e.select(e.Tag, (t) => ({
 					filter: e.op(
@@ -57,7 +57,7 @@ export const createNote = new Elysia()
 			set.status = httpStatus.HTTP_201_CREATED;
 			return responseBuilder("success", {
 				message: "Successfully created note",
-				data: null,
+				data: result.data
 			});
 		},
 		{
@@ -65,7 +65,7 @@ export const createNote = new Elysia()
 				class: t.String({ minLength: 1 }),
 				school: t.String({ minLength: 1 }),
 				title: t.String({ minLength: 1 }),
-				summary: t.Optional(t.String({ minLength: 1 })),
+				summary: t.Optional(t.String()),
 				tags: t.Optional(t.Array(t.String({ minLength: 1 }))),
 				priority: t.Optional(
 					t.Union([
