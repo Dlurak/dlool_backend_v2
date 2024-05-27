@@ -26,8 +26,8 @@ export const normalDateToCustomDateTime = (date: Date) => {
 	const day = date.getDate();
 	const month = date.getMonth() + 1;
 	const year = date.getFullYear();
-	const hour = date.getHours()
-	const min = date.getMinutes()
+	const hour = date.getHours();
+	const min = date.getMinutes();
 
 	return { day, month, year, hour, min };
 };

@@ -57,7 +57,7 @@ export const createNote = new Elysia()
 			set.status = httpStatus.HTTP_201_CREATED;
 			return responseBuilder("success", {
 				message: "Successfully created note",
-				data: result.data
+				data: result.data,
 			});
 		},
 		{

@@ -98,7 +98,7 @@ export const listCalendar = new Elysia().use(HttpStatusCode()).get(
 					summary: true,
 					class: () => ({
 						name: true,
-						school: () => ({ name: true })
+						school: () => ({ name: true }),
 					}),
 					updates: () => ({
 						user: () => ({ username: true, displayname: true }),

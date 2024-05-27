@@ -5,7 +5,10 @@ import { HttpStatusCode } from "elysia-http-status-code";
 import { client } from "index";
 import { normalDateToCustomDateTime } from "utils/dates/customAndNormal";
 import { promiseResult } from "utils/errors";
-import { replaceDateDeep, replaceDateWithTimestamp } from "utils/objects/transform";
+import {
+	replaceDateDeep,
+	replaceDateWithTimestamp,
+} from "utils/objects/transform";
 import { responseBuilder } from "utils/response";
 
 export const specificCalendar = new Elysia()
@@ -22,7 +25,7 @@ export const specificCalendar = new Elysia()
 			summary: true,
 			class: () => ({
 				name: true,
-				school: () => ({ name: true })
+				school: () => ({ name: true }),
 			}),
 			updates: () => ({
 				user: () => ({ username: true, displayname: true }),
@@ -54,6 +57,6 @@ export const specificCalendar = new Elysia()
 			data: {
 				...replaceDateDeep(result.data, normalDateToCustomDateTime),
 				updates: result.data.updates.map(replaceDateWithTimestamp),
-			}
+			},
 		});
-	})
+	});
