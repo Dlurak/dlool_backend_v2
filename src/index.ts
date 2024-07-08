@@ -21,7 +21,15 @@ import { edgedb } from "../dbschema/edgeql-js/imports";
 export const client = edgedb.createClient();
 
 const app = new Elysia()
-	.use(swagger(DOCUMENTATION_OPTIONS))
+	.onBeforeHandle(({ set }) => {
+		set.headers["Access-Control-Allow-Credentials"] = "true";
+		set.headers["Access-Control-Allow-Headers"] = "*";
+		set.headers["Access-Control-Allow-Methods"] = "*";
+		set.headers["Access-Control-Allow-Origin"] = "*";
+		set.headers["Access-Control-Expose-Headers"] = "*";
+		set.headers["Access-Control-Exposed-Headers"] = "*";
+	})
+	// .use(swagger(DOCUMENTATION_OPTIONS))
 	.use(schoolRouter)
 	.use(classRouter)
 	.use(moderationRouter)
@@ -29,14 +37,16 @@ const app = new Elysia()
 	.use(calendarRouter)
 	.use(tagRouter)
 	.use(noteRouter)
-	.use(cors())
+	//.use(cors())
 	.get(
 		"/",
-		() => ({
-			name: "Dlool",
-			isDlool: true,
-			version: VERSION,
-		}),
+		({ set }) => {
+			return {
+				name: "Dlool",
+				isDlool: true,
+				version: VERSION,
+			};
+		},
 		{
 			detail: {
 				tags: ["App"],
