@@ -1,4 +1,3 @@
-import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { DOCUMENTATION_OPTIONS } from "constants/documentation";
 import { VERSION } from "constants/general";
@@ -29,7 +28,7 @@ const app = new Elysia()
 		set.headers["Access-Control-Expose-Headers"] = "*";
 		set.headers["Access-Control-Exposed-Headers"] = "*";
 	})
-	// .use(swagger(DOCUMENTATION_OPTIONS))
+	.use(swagger(DOCUMENTATION_OPTIONS))
 	.use(schoolRouter)
 	.use(classRouter)
 	.use(moderationRouter)
@@ -37,16 +36,13 @@ const app = new Elysia()
 	.use(calendarRouter)
 	.use(tagRouter)
 	.use(noteRouter)
-	//.use(cors())
 	.get(
 		"/",
-		({ set }) => {
-			return {
-				name: "Dlool",
-				isDlool: true,
-				version: VERSION,
-			};
-		},
+		() => ({
+			name: "Dlool",
+			isDlool: true,
+			version: VERSION,
+		}),
 		{
 			detail: {
 				tags: ["App"],
