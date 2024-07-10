@@ -1,3 +1,4 @@
+import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
 import { DOCUMENTATION_OPTIONS } from "constants/documentation";
 import { VERSION } from "constants/general";
@@ -20,13 +21,9 @@ import { edgedb } from "../dbschema/edgeql-js/imports";
 export const client = edgedb.createClient();
 
 const app = new Elysia()
-	.onBeforeHandle(({ set }) => {
-		set.headers["Access-Control-Allow-Credentials"] = "true";
-		set.headers["Access-Control-Allow-Headers"] = "*";
-		set.headers["Access-Control-Allow-Methods"] = "*";
-		set.headers["Access-Control-Allow-Origin"] = "*";
-		set.headers["Access-Control-Expose-Headers"] = "*";
-		set.headers["Access-Control-Exposed-Headers"] = "*";
+	.onAfterHandle(({ set }) => {
+		// biome-ignore lint: Delete is fine here
+		delete set.headers.Vary;
 	})
 	.use(swagger(DOCUMENTATION_OPTIONS))
 	.use(schoolRouter)
@@ -36,6 +33,7 @@ const app = new Elysia()
 	.use(calendarRouter)
 	.use(tagRouter)
 	.use(noteRouter)
+	.use(cors())
 	.get(
 		"/",
 		() => ({
