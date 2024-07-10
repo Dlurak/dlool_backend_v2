@@ -21,6 +21,10 @@ import { edgedb } from "../dbschema/edgeql-js/imports";
 export const client = edgedb.createClient();
 
 const app = new Elysia()
+	.onAfterHandle(({ set }) => {
+		// biome-ignore lint: Delete is fine here
+		delete set.headers.Vary;
+	})
 	.use(swagger(DOCUMENTATION_OPTIONS))
 	.use(schoolRouter)
 	.use(classRouter)
