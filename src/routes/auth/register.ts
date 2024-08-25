@@ -53,7 +53,7 @@ export const registerRouter = new Elysia({ prefix: "/register" })
 					description:
 						"Password must contain at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character",
 					pattern:
-						"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$",
+						"^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^a-zA-Z0-9]).{8,}$",
 				}),
 				// t.RegExp(),
 			}),
